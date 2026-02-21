@@ -186,7 +186,7 @@ function SkiaParticles({
   // Usamos un radio generoso que no cambie frecuentemente para evitar reseteos por layout
   const stableMaxRadius = useMemo(() => {
     return Math.sqrt(width * width + height * height) * 0.9;
-  }, []); // Solo se calcula al montar
+  }, [width, height]); // Se recalcula si cambia la orientación
 
   const particles = useMemo(() => {
     return Array.from({ length: 160 }, () => {
@@ -243,7 +243,19 @@ function SkiaFieldGlow({ color, focalPoint, scale }: { color: any, focalPoint: R
 }
 
 // ─── Refraction Overlay ─────────────────────────────────────
-function RefractionOverlay({ skEffect, focalPoint, isRunning }: { skEffect: any, focalPoint: Reanimated.SharedValue<{ x: number; y: number }>, isRunning: boolean }) {
+function RefractionOverlay({ 
+  skEffect, 
+  focalPoint, 
+  isRunning,
+  width,
+  height
+}: { 
+  skEffect: any, 
+  focalPoint: Reanimated.SharedValue<{ x: number; y: number }>, 
+  isRunning: boolean,
+  width: number,
+  height: number
+}) {
   const lensSize = 250;
   const clipRect = useDerivedValue(() => {
     return {
@@ -256,7 +268,7 @@ function RefractionOverlay({ skEffect, focalPoint, isRunning }: { skEffect: any,
 
   const uniforms = useDerivedValue(() => {
     return {
-      iResolution: [SCREEN_WIDTH, SCREEN_HEIGHT],
+      iResolution: [width, height],
       lensPos: [focalPoint.value.x - lensSize / 2, focalPoint.value.y - lensSize / 2],
       strength: isRunning ? 0.85 : 0.4,
       active: isRunning ? 1.0 : 0.5,
@@ -1239,6 +1251,8 @@ export default function App() {
                   skEffect={skEffect}
                   focalPoint={focalPoint}
                   isRunning={isRunning}
+                  width={SCREEN_WIDTH}
+                  height={SCREEN_HEIGHT}
                 />
               )}
             </Canvas>
