@@ -12,6 +12,7 @@ import {
   Easing,
   useWindowDimensions,
 } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Reanimated, {
   useSharedValue,
   withRepeat,
@@ -243,15 +244,15 @@ function SkiaFieldGlow({ color, focalPoint, scale }: { color: any, focalPoint: R
 }
 
 // ─── Refraction Overlay ─────────────────────────────────────
-function RefractionOverlay({ 
-  skEffect, 
-  focalPoint, 
+function RefractionOverlay({
+  skEffect,
+  focalPoint,
   isRunning,
   width,
   height
-}: { 
-  skEffect: any, 
-  focalPoint: Reanimated.SharedValue<{ x: number; y: number }>, 
+}: {
+  skEffect: any,
+  focalPoint: Reanimated.SharedValue<{ x: number; y: number }>,
   isRunning: boolean,
   width: number,
   height: number
@@ -728,6 +729,14 @@ class SkiaErrorBoundary extends React.Component<
 
 // ─── Main App ────────────────────────────────────────────────
 export default function App() {
+  return (
+    <SafeAreaProvider>
+      <AppContent />
+    </SafeAreaProvider>
+  );
+}
+
+function AppContent() {
   // Load Skia on web
   const [isSkiaReady, setIsSkiaReady] = useState(Platform.OS !== 'web');
   const [skEffect, setSkEffect] = useState<any>(null);
@@ -778,6 +787,7 @@ export default function App() {
   }, []);
 
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
   // Dynamic layout constants
   const SPACING_UNIT = SCREEN_HEIGHT * 0.02; // ~16-18px
@@ -1260,7 +1270,11 @@ export default function App() {
         )}
       </View>
 
-      <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
+      <Animated.View style={[styles.content, {
+        opacity: fadeAnim,
+        paddingTop: Math.max(insets.top, 20),
+        paddingBottom: insets.bottom + 34
+      }]}>
         {/* ── Header ──────────────────────────────────── */}
         <View style={styles.header}>
           <View style={styles.subtitleRow}>
@@ -1573,12 +1587,11 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingBottom: 40,
   },
 
   // ── Header
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingTop: 0, // Handled by container padding and insets
     alignItems: 'center',
     justifyContent: 'center',
   },
