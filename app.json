@@ -18,7 +18,8 @@
             "navigationBarAnimated": true
           }
         }
-      ]
+      ],
+      "expo-video"
     ],
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -42,7 +43,7 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.felix.aire",
-      "versionCode": 9
+      "versionCode": 14
     },
     "web": {
       "favicon": "./assets/favicon.png"
